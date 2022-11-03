@@ -51,7 +51,7 @@ static void __cdecl ExtraCharacter_Display(ObjectMaster* obj)
 
             int backup = SuperSonicFlag;
             njSetTexture(&SUPERSONIC_TEXLIST);
-            Direct3D_PerformLighting(4);
+            Direct3D_PerformLighting(2);
             SuperSonicFlag = 1;
             njTranslate(nullptr, 0.0f, 3.0f, HudScale ? -20.0f : -20.0f * HorizontalStretch);
             njRotateY(nullptr, 0x4000);
