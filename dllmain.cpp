@@ -139,12 +139,14 @@ static void __cdecl ExtraCharacter_Main(task* obj)
             ExtraCharacterPlayAnim(data, co2, charseldata, 146, 75);
         }
 
-        PJoinVertexes(data, data2, (playerwk*)co2);
+        if (co2 && co2->AnimationThing.WeldInfo != nullptr)
+            PJoinVertexes(data, data2, (playerwk*)co2);
     }
-    
+
     obj->disp(obj);
 }
 
+static int timer = 0;
 static void __cdecl ExtraCharacter_Delete(task* obj)
 {
     auto data = obj->twp;
@@ -163,7 +165,26 @@ static void __cdecl ExtraCharacter_Delete(task* obj)
     }
 
     FreeCharacter(data->counter.b[0]);
+    timer = 0;
 }
+
+PL_JOIN_VERTEX* getCharacterWeld(const uint8_t character)
+{
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        if (playerpwp[i] && playertwp[i])
+        {
+            if (playertwp[i]->counter.b[1] == character || playertwp[i]->counter.b[1] == Characters_Sonic && character == Characters_MetalSonic)
+            {
+                playerpwp[i]->mj.pljvptr[0].dstobj = playerpwp[i]->mj.pljvptr[0].dstobj;
+                return playerpwp[i]->mj.pljvptr;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 
 static void __cdecl ExtraCharacter_Load(task* obj)
 {
@@ -173,61 +194,62 @@ static void __cdecl ExtraCharacter_Load(task* obj)
         return;
     }
 
-    auto data = obj->twp;
-    auto data2 = reinterpret_cast<motionwk2*>(obj->mwp);
-
-    // Load everything but CharBubble
-    WriteData(reinterpret_cast<int*>(0x442961), 0);
-    InitCharacterVars(data->counter.b[0], (ObjectMaster*)obj);
-    WriteData(reinterpret_cast<ObjectFuncPtr*>(0x442961), CharBubble_Init);
-
-    auto pwp = (playerwk*)data2->work.l;
-    pwp->mj.plactptr = (PL_ACTION*)&SonicAnimData;
-
-    if (charSelType == CharSelType_Adventure)
+    if (++timer == 15) //let the game load everyone so we can get the weld data properly (race issue)
     {
-        // SUPER SONIC
 
-        WeldInfo* item = SonicWeldInfo;
+        auto data = obj->twp;
+        auto data2 = reinterpret_cast<motionwk2*>(obj->mwp);
 
-        // Init disabled-by-default welds
-        do
+        // Load everything but CharBubble
+        WriteData(reinterpret_cast<int*>(0x442961), 0);
+        InitCharacterVars(data->counter.b[0], (ObjectMaster*)obj);
+        WriteData(reinterpret_cast<ObjectFuncPtr*>(0x442961), CharBubble_Init);
+
+        auto pwp = (playerwk*)data2->work.l;
+        pwp->mj.plactptr = (PL_ACTION*)&SonicAnimData;
+
+        if (charSelType == CharSelType_Adventure)
         {
-            if (item->BaseModel)
+            // SUPER SONIC
+            auto welds = getCharacterWeld(Characters_Sonic);
+
+            LoadPVM("SUPERSONIC", &SUPERSONIC_TEXLIST);
+            if (welds)
             {
-                if (item->BaseModel == SONIC_OBJECTS[22])
-                {
-                    item->WeldType = 2;
-                }
+                welds[0].dstobj = welds[0].dstobj;
+                pwp->mj.pljvptr = welds;
+            }
+            pwp->equipment |= Upgrades_SuperSonic;
+
+            ExtraCharacterAction.object = SONIC_OBJECTS[22];
+        }
+        else
+        {
+            // METAL SONIC
+
+            LoadCharTextures(Characters_MetalSonic);
+
+            auto welds = getCharacterWeld(Characters_MetalSonic);
+            if (welds)
+            {
+                welds[0].dstobj = welds[0].dstobj;
+                pwp->mj.pljvptr = welds;
             }
 
-            ++item;
+            ExtraCharacterAction.object = SONIC_OBJECTS[68];
         }
-        while (item->BaseModel);
 
-        LoadPVM("SUPERSONIC", &SUPERSONIC_TEXLIST);
-        pwp->mj.pljvptr = (PL_JOIN_VERTEX*)&SonicWeldInfo;
-        pwp->equipment |= Upgrades_SuperSonic;
+        if (pwp && pwp->mj.pljvptr != nullptr)
+            PJoinVertexes(data, data2, pwp);
 
-        ExtraCharacterAction.object = SONIC_OBJECTS[22];
+        pwp->mj.mtnmode = 2;
+        pwp->mj.actwkptr = &ExtraCharacterAction;
+
+        obj->exec = ExtraCharacter_Main;
+        obj->disp = ExtraCharacter_Display;
+        obj->dest = ExtraCharacter_Delete;
+        timer = 0;
     }
-    else
-    {
-        // METAL SONIC
-
-        LoadCharTextures(Characters_MetalSonic);
-        pwp->mj.pljvptr = (PL_JOIN_VERTEX*)&MetalSonicWeldInfo;
-
-        ExtraCharacterAction.object = SONIC_OBJECTS[68];
-    }
-
-    PJoinVertexes(data, data2, pwp);
-    pwp->mj.mtnmode = 2;
-    pwp->mj.actwkptr = &ExtraCharacterAction;
-
-    obj->exec = ExtraCharacter_Main;
-    obj->disp = ExtraCharacter_Display;
-    obj->dest = ExtraCharacter_Delete;
 }
 
 extern "C"
