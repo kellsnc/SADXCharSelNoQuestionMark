@@ -13,8 +13,8 @@ FunctionPointer(void, FreeCharacter, (int id), 0x44B010);
 #pragma pack(push, 1)
 struct CharSelDataA
 {
-    ObjectMaster* CharacterObjects[7];
-    ObjectMaster* object;
+    task* CharacterObjects[7];
+    task* object;
     char gap_20[12];
     char field_2C;
     char CurrentCharAnim[7];
@@ -31,14 +31,14 @@ static bool HudScale = false;
 
 static NJS_ACTION ExtraCharacterAction{};
 
-static void __cdecl ExtraCharacter_Display(ObjectMaster* obj)
+static void __cdecl ExtraCharacter_Display(task* obj)
 {
-    auto data = obj->Data1;
+    auto data = obj->twp;
 
-    if (!MissedFrames && BYTE1(CharacterSelection) == data->CharIndex)
+    if (!MissedFrames && BYTE1(CharacterSelection) == data->counter.b[0])
     {
-        auto data2 = reinterpret_cast<EntityData2*>(obj->Data2);
-        auto co2 = data2->CharacterData;
+        auto data2 = reinterpret_cast<motionwk2*>(obj->mwp);
+        auto co2 = (CharObj2*)data2->work.l;
         
         Direct3D_SetZFunc(1u);
         SetMaterialAndSpriteColor_Float(1.0f, 1.0f, 1.0f, 1.0f);
@@ -66,7 +66,7 @@ static void __cdecl ExtraCharacter_Display(ObjectMaster* obj)
             njSetTexture(&METALSONIC_TEXLIST);
             Direct3D_PerformLighting(2);
             MetalSonicFlag = 1;
-            njTranslate(nullptr, 0.0f, data->Action == 2 ? 2.0f : 0.0f, HudScale ? -20.0f : -20.0f * HorizontalStretch);
+            njTranslate(nullptr, 0.0f, data->mode == 2 ? 2.0f : 0.0f, HudScale ? -20.0f : -20.0f * HorizontalStretch);
             njRotateY(nullptr, 0x4000);
             njAction(co2->AnimationThing.action, co2->AnimationThing.Frame);
             MetalSonicFlag = backup;
@@ -79,28 +79,28 @@ static void __cdecl ExtraCharacter_Display(ObjectMaster* obj)
     }
 }
 
-static void ExtraCharacterPlayAnim(EntityData1* data, CharObj2* co2, CharSelDataA* charseldata, int idleanim, int selectanim)
+static void ExtraCharacterPlayAnim(taskwk* data, CharObj2* co2, CharSelDataA* charseldata, int idleanim, int selectanim)
 {
     if (charseldata->CharSelected == 0)
     {
-        if (data->Action != 1)
+        if (data->mode != 1)
         {
             ExtraCharacterAction.motion = SonicAnimData[idleanim].Animation->motion;
             co2->AnimationThing.Index = idleanim;
             co2->AnimationThing.Frame = 0.0f;
-            data->Action = 1;
+            data->mode = 1;
         }
 
         co2->AnimationThing.Frame = fmodf(co2->AnimationThing.Frame + 0.5f, co2->AnimationThing.action->motion->nbFrame - 1);
     }
     else
     {
-        if (data->Action != 2)
+        if (data->mode != 2)
         {
             ExtraCharacterAction.motion = SonicAnimData[selectanim].Animation->motion;
             co2->AnimationThing.Index = selectanim;
             co2->AnimationThing.Frame = 0.0f;
-            data->Action = 2;
+            data->mode = 2;
         }
 
         if (co2->AnimationThing.Frame < co2->AnimationThing.action->motion->nbFrame - 1)
@@ -114,14 +114,14 @@ static void ExtraCharacterPlayAnim(EntityData1* data, CharObj2* co2, CharSelData
     }
 }
 
-static void __cdecl ExtraCharacter_Main(ObjectMaster* obj)
+static void __cdecl ExtraCharacter_Main(task* obj)
 {
-    auto data = obj->Data1;
+    auto data = obj->twp;
 
-    if (BYTE1(CharacterSelection) == data->CharIndex)
+    if (BYTE1(CharacterSelection) == data->counter.b[0])
     {
-        auto data2 = reinterpret_cast<EntityData2*>(obj->Data2);
-        auto co2 = data2->CharacterData;
+        auto data2 = reinterpret_cast<motionwk2*>(obj->mwp);
+        auto co2 = (CharObj2*)data2->work.l;
 
         auto charselobj = CharSel_ptr;
         auto charseldata = reinterpret_cast<CharSelDataA*>(charselobj->UnknownB_ptr);
@@ -139,19 +139,19 @@ static void __cdecl ExtraCharacter_Main(ObjectMaster* obj)
             ExtraCharacterPlayAnim(data, co2, charseldata, 146, 75);
         }
 
-        ProcessVertexWelds(data, data2, co2);
+        PJoinVertexes(data, data2, (playerwk*)co2);
     }
     
-    obj->DisplaySub(obj);
+    obj->disp(obj);
 }
 
-static void __cdecl ExtraCharacter_Delete(ObjectMaster* obj)
+static void __cdecl ExtraCharacter_Delete(task* obj)
 {
-    auto data = obj->Data1;
-    auto data2 = reinterpret_cast<EntityData2*>(obj->Data2);
-    auto co2 = data2->CharacterData;
+    auto data = obj->twp;
+    auto data2 = reinterpret_cast<motionwk2*>(obj->mwp);
+    auto co2 = (playerwk*)data2->work.l;
 
-    co2->AnimationThing.action = nullptr;
+    co2->mj.actwkptr = nullptr;
 
     if (charSelType == CharSelType_Adventure)
     {
@@ -162,27 +162,27 @@ static void __cdecl ExtraCharacter_Delete(ObjectMaster* obj)
         UnloadCharTextures(Characters_MetalSonic);
     }
 
-    FreeCharacter(data->CharIndex);
+    FreeCharacter(data->counter.b[0]);
 }
 
-static void __cdecl ExtraCharacter_Load(ObjectMaster* obj)
+static void __cdecl ExtraCharacter_Load(task* obj)
 {
     if (ExtraCharacter_Load_t && charSelType == CharSelType_Adventure && !GetEventFlag(EventFlags_SuperSonicAdventureComplete))
     {
-        obj->MainSub = reinterpret_cast<ObjectFuncPtr>(ExtraCharacter_Load_t->Target());
+        obj->exec = reinterpret_cast<TaskFuncPtr>(ExtraCharacter_Load_t->Target());
         return;
     }
 
-    auto data = obj->Data1;
-    auto data2 = reinterpret_cast<EntityData2*>(obj->Data2);
+    auto data = obj->twp;
+    auto data2 = reinterpret_cast<motionwk2*>(obj->mwp);
 
     // Load everything but CharBubble
     WriteData(reinterpret_cast<int*>(0x442961), 0);
-    InitCharacterVars(data->CharIndex, obj);
+    InitCharacterVars(data->counter.b[0], (ObjectMaster*)obj);
     WriteData(reinterpret_cast<ObjectFuncPtr*>(0x442961), CharBubble_Init);
 
-    auto co2 = data2->CharacterData;
-    co2->AnimationThing.AnimData = SonicAnimData;
+    auto pwp = (playerwk*)data2->work.l;
+    pwp->mj.plactptr = (PL_ACTION*)&SonicAnimData;
 
     if (charSelType == CharSelType_Adventure)
     {
@@ -206,8 +206,8 @@ static void __cdecl ExtraCharacter_Load(ObjectMaster* obj)
         while (item->BaseModel);
 
         LoadPVM("SUPERSONIC", &SUPERSONIC_TEXLIST);
-        co2->AnimationThing.WeldInfo = SonicWeldInfo;
-        co2->Upgrades |= Upgrades_SuperSonic;
+        pwp->mj.pljvptr = (PL_JOIN_VERTEX*)&SonicWeldInfo;
+        pwp->equipment |= Upgrades_SuperSonic;
 
         ExtraCharacterAction.object = SONIC_OBJECTS[22];
     }
@@ -216,18 +216,18 @@ static void __cdecl ExtraCharacter_Load(ObjectMaster* obj)
         // METAL SONIC
 
         LoadCharTextures(Characters_MetalSonic);
-        co2->AnimationThing.WeldInfo = MetalSonicWeldInfo;
+        pwp->mj.pljvptr = (PL_JOIN_VERTEX*)&MetalSonicWeldInfo;
 
         ExtraCharacterAction.object = SONIC_OBJECTS[68];
     }
 
-    ProcessVertexWelds(data, data2, co2);
-    co2->AnimationThing.State = 2;
-    co2->AnimationThing.action = &ExtraCharacterAction;
+    PJoinVertexes(data, data2, pwp);
+    pwp->mj.mtnmode = 2;
+    pwp->mj.actwkptr = &ExtraCharacterAction;
 
-    obj->MainSub = ExtraCharacter_Main;
-    obj->DisplaySub = ExtraCharacter_Display;
-    obj->DeleteSub = ExtraCharacter_Delete;
+    obj->exec = ExtraCharacter_Main;
+    obj->disp = ExtraCharacter_Display;
+    obj->dest = ExtraCharacter_Delete;
 }
 
 extern "C"
