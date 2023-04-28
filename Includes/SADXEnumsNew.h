@@ -14,6 +14,15 @@
 #define makemasks(enumname,membername) enumname##s_##membername = (1 << enumname##Bits_##membername)
 #define levelact(level, act) (((level) << 8) | (act))
 
+enum LANGUAGE : __int32 // Different from X360
+{
+	JAPANESE = 0x0,
+	ENGLISH = 0x1,
+	FRENCH = 0x2,
+	SPANISH = 0x3,
+	GERMAN = 0x4
+};
+
 enum TEX_EFF
 {
 	TEX_EFF_RING = 0x0,
@@ -356,6 +365,56 @@ enum AdvaModeEnum
 	ADVA_MODE_END = 0x19,
 	ADVA_MODE_END2 = 0x1A,
 	ADVA_MODE_MAX = 0x1B,
+};
+
+enum FileSbMdEnum : __int32
+{
+	FILESEL_SMD_STAY = 0x0,
+	FILESEL_SMD_STAY2 = 0x1,
+	FILESEL_SMD_DECIDE = 0x2,
+	FILESEL_SMD_DELETE = 0x3,
+	FILESEL_SMD_DELETE2 = 0x4,
+	FILESEL_SMD_DELETEMISS = 0x5,
+	FILESEL_SMD_PRE_SAVE_INET_SC = 0x6,
+	FILESEL_SMD_SAVE_INET_SC = 0x7,
+	FILESEL_SMD_AFTER_SAVE_INET_SC = 0x8,
+	FILESEL_SMD_BACK = 0x9,
+	FILESEL_SMD_NWAIT = 0xA,
+	FILESEL_SMD_CRC_ERR = 0xB,
+	FILESEL_SMD_FIRST_SAVE = 0xC,
+	FILESEL_SMD_FIRST_SAVE2 = 0xD,
+	FILESEL_SMD_FILE_MAX = 0xE,
+	FILESEL_SMD_FILE_MAX2 = 0xF,
+	FILESEL_SMD_BROKEN = 0x10,
+	FILESEL_SMD_MEMOCA = 0x11,
+	FILESEL_SMD_MAX = 0x12,
+};
+
+enum ERR_TYPE : __int32
+{
+	GC_ERR_NONE = 0x0,
+	GC_ERR_PROBE = 0x1,
+	GC_ERR_MOUNT = 0x2,
+	GC_ERR_ENCODE = 0x3,
+	GC_ERR_BROKEN = 0x4,
+	GC_ERR_CHECK = 0x5,
+	GC_ERR_CRC = 0x6,
+	GC_ERR_SIZE = 0x7,
+	GC_ERR_CHAO = 0x8,
+	GC_ERR_CHAO2 = 0x9,
+	GC_ERR_NO_USE = 0xA,
+	GC_FORMAT_FINISH = 0xB,
+	GC_FORMAT_FALSE = 0xC,
+	GC_ERR_DIFFER = 0xD,
+	GC_ERR_DEATH = 0xE,
+	GC_ERR_SERIAL = 0xF,
+	GC_ERR_CHAOONLY = 0x10,
+	GC_ERR_CHAOSAVE = 0x11,
+	GC_ERR_IPL = 0x12,
+	GC_ERR_SPACE = 0x13,
+	GC_ERR_SECTOR = 0x14,
+	GC_ERR_FATAL = 0x15,
+	GC_ERR_ETC = 0x16,
 };
 
 enum SHAPE
@@ -781,8 +840,6 @@ enum StoryFlags
 	FLAG_EVENT_NPC_DISP = 0x1E4,
 	FLAG_ALL_LAST = 0x1E5,
 };
-
-
 
 enum EV
 {
@@ -3626,6 +3683,464 @@ enum MD_E102
 	MD_E102_CFUE = 0x3A,
 	MD_E102_EVENT = 0x3B,
 	MD_E102_EDIT = 0x3C,
+};
+
+// Legacy NJS_LIGHTs enum; LE_LIG_EV_DARK and LE_LIG_EV_CONS are used in E-100 series briefing cutscene when the lights turn off.
+enum LE_LIG
+{
+	LE_LIG_0 = 0x0,
+	LE_LIG_AS = 0x3,
+	LE_LIG_FINALEGG = 0x2,
+	LE_LIG_C0 = 0x2,
+	LE_LIG_CHAOS = 0x2,
+	LE_LIG_SPOT_HIGHWAY = 0x2,
+	LE_LIG_EV_DARK = 0x2,
+	LE_LIG_EV_CONS = 0x2,
+};
+
+// QueuedModelFlagsB in the original disasm
+enum LATE
+{
+	LATE_WZ = 0x1,
+	LATE_EASY = 0x2,
+	LATE_LIG = 0x4,
+	LATE_NO = 0x8,
+	LATE_NCOMP = 0x10,
+	LATE_MAT = 0x0,
+};
+
+enum AdvaStatEnum
+{
+	ADVA_STAT_REQWAIT = 0x0,
+	ADVA_STAT_FADEIN = 0x1,
+	ADVA_STAT_KEEP = 0x2,
+	ADVA_STAT_FADEOUT = 0x3,
+	ADVA_STAT_MAX = 0x4,
+};
+
+enum TrialActSbMdEnum
+{
+	TRIALACTSEL_SMD_STAY = 0x0,
+	TRIALACTSEL_SMD_DECIDE = 0x1,
+	TRIALACTSEL_SMD_NWAIT = 0x2,
+	TRIALACTSEL_SMD_MAX = 0x3,
+};
+
+enum AvaStgEnum
+{
+	AVASTG_MR = 0x0,
+	AVASTG_SS = 0x1,
+	AVASTG_EC = 0x2,
+	AVASTG_BEACH = 0x3,
+	AVASTG_WINDY = 0x4,
+	AVASTG_CASINO = 0x5,
+	AVASTG_SNOW = 0x6,
+	AVASTG_TWINKLEPARK = 0x7,
+	AVASTG_HIGHWAY = 0x8,
+	AVASTG_MOUNTAIN = 0x9,
+	AVASTG_SKYDECK = 0xA,
+	AVASTG_SHELTER = 0xB,
+	AVASTG_RUIN = 0xC,
+	AVASTG_FINAL = 0xD,
+	AVASTG_SHOOTING1 = 0xE,
+	AVASTG_SHOOTING2 = 0xF,
+	AVASTG_SANDBOARD = 0x10,
+	AVASTG_EC_C = 0x11,
+	AVASTG_MG_CART = 0x12,
+	AVASTG_CHAOS0 = 0x13,
+	AVASTG_CHAOS2 = 0x14,
+	AVASTG_CHAOS4 = 0x15,
+	AVASTG_CHAOS6 = 0x16,
+	AVASTG_EGGMOBILE1 = 0x17,
+	AVASTG_EGGMOBILE2 = 0x18,
+	AVASTG_EGGMOBILE3 = 0x19,
+	AVASTG_VS_SONIC = 0x1A,
+	AVASTG_VS_KNUCKLES = 0x1B,
+	AVASTG_VS_MILES = 0x1C,
+	AVASTG_VS_E102 = 0x1D,
+	AVASTG_VS_ZERO = 0x1E,
+	AVASTG_VS_E102B = 0x1F,
+	AVASTG_VS_BOSS = 0x20,
+	AVASTG_MAX = 0x21,
+};
+
+enum DiaTypeEnum
+{
+	DIA_TYPE_FILESEL = 0x0,
+	DIA_TYPE_FILEDEL = 0x1,
+	DIA_TYPE_MAINMENU = 0x2,
+	DIA_TYPE_MAINMENU_NPUTI = 0x3,
+	DIA_TYPE_TITLEMENU = 0x4,
+	DIA_TYPE_TRIALACTSEL = 0x5,
+	DIA_TYPE_MINIGAMESEL = 0x6,
+	DIA_TYPE_CHARSEL1 = 0x7,
+	DIA_TYPE_CHARSEL2 = 0x8,
+	DIA_TYPE_CHARSEL3 = 0x9,
+	DIA_TYPE_CHARSEL4 = 0xA,
+	DIA_TYPE_OPT_MONOSTE = 0xB,
+	DIA_TYPE_OPT_MSG = 0xC,
+	DIA_TYPE_OPT_VOICE = 0xD,
+	DIA_TYPE_OPT_TEXT = 0xE,
+	DIA_TYPE_TVSETTING1 = 0xF,
+	DIA_TYPE_SNDTEST = 0x10,
+	DIA_TYPE_VMSNOMEM = 0x11,
+	DIA_TYPE_OPT_VIBSEL = 0x12,
+	DIA_TYPE_OPT_SNDOUT = 0x13,
+	DIA_TYPE_FILE_CRC_ERR = 0x14,
+	DIA_TYPE_FORMAT = 0x15,
+	DIA_TYPE_NEW_FILESEL = 0x16,
+	DIA_TYPE_MAINMENU_SUB_UN = 0x17,
+	DIA_TYPE_MAINMENU_SUB = 0x18,
+	DIA_TYPE_MAINMENU_SUB_DL = 0x19,
+	DIA_TYPE_OPTIONMENU_SUB = 0x1A,
+	DIA_TYPE_HOW_TO_PLAY = 0x1B,
+	DIA_TYPE_LB_MENU = 0x1C,
+	DIA_TYPE_MAINMENU_NDOWNLOAD = 0x1D,
+	DIA_TYPE_MAINMENU_EXIT = 0x1E,
+	DIA_TYPE_MAX = 0x1F,
+};
+
+enum TitleMenuSbMdEnum
+{
+	TITLEMENU_SMD_STAY = 0x0,
+	TITLEMENU_SMD_DECIDE = 0x1,
+	TITLEMENU_SMD_STAY_S = 0x2,
+	TITLEMENU_SMD_TO_DEMO = 0x3,
+	TITLEMENU_SMD_TO_DEMO2 = 0x4,
+	TITLEMENU_SMD_TO_MAINMENU = 0x5,
+	TITLEMENU_SMD_NWAIT = 0x6,
+	TITLEMENU_SMD_MAX = 0x7,
+};
+
+enum TitleMenuEnum
+{
+	OPTION_MENU_HOW2PLAY = 0x0,
+	OPTION_MENU_CONTROLS = 0x1,
+	OPTION_MENU_OPTIONS = 0x2,
+	OPTION_MENU_CREDITS = 0x3,
+	OPTION_MENU_BACK = 0x4,
+	OPTION_MENU_MAX = 0x5,
+};
+
+enum ChSbMdEnum
+{
+	CHSEL_SMD_STAY = 0x0,
+	CHSEL_SMD_MOVING_L = 0x1,
+	CHSEL_SMD_MOVING_R = 0x2,
+	CHSEL_SMD_DECIDE = 0x3,
+	CHSEL_SMD_DLG1 = 0x4,
+	CHSEL_SMD_DLG2 = 0x5,
+	CHSEL_SMD_DLG3 = 0x6,
+	CHSEL_SMD_DLG4 = 0x7,
+	CHSEL_SMD_DECIDE2 = 0x8,
+	CHSEL_SMD_DECIDE2X = 0x9,
+	CHSEL_SMD_NWAIT = 0xA,
+	CHSEL_SMD_MAX = 0xB,
+};
+
+enum AdvDlgSelEnum
+{
+	ADVDLG_KAISHI = 0x0,
+	ADVDLG_SETSUMEI = 0x1,
+	ADVDLG_ENDING = 0x2,
+	ADVDLG_CANCEL = 0x3,
+	ADVDLG_MAX = 0x4,
+};
+
+enum DlgPnlStyleEnum
+{
+	DLG_PNLSTYLE_MARU = 0x0,
+	DLG_PNLSTYLE_SIKAKU = 0x1,
+	DLG_PNLSTYLE_MARU4 = 0x2,
+	DLG_PNLSTYLE_MARUSO = 0x3,
+	DLG_PNLSTYLE_SIKAKU2 = 0x4,
+	DLG_PNLSTYLE_MARU2 = 0x5,
+	DLG_PNLSTYLE_MAX = 0x6,
+};
+
+enum TitleNewSbMdEnum
+{
+	TITLENEW_SMD_STAY = 0x0,
+	TITLENEW_SMD_ALERT = 0x1,
+	TITLENEW_SMD_STAY_MAIN = 0x2,
+	TITLENEW_SMD_NWAIT = 0x3,
+	TITLENEW_SMD_MAX = 0x4,
+};
+
+// Camera direct modes
+enum
+{
+	CDM_NONE,
+	CDM_TGTOFST,
+	CDM_LOOKAT,
+	CDM_CAMSTATUS,
+	CDM_NUM
+};
+
+// Camera level
+enum
+{
+	CLEVEL_NORMAL,
+	CLEVEL_AREA,
+	CLEVEL_EVENT,
+	CLEVEL_COMPULSION,
+	CLEVEL_COLLISION,
+	CLEVEL_DEBUG,
+	CLEVEL_NUM
+};
+
+// Camera collision type (layout)
+enum
+{
+	CAMCOL_SPHERE,
+	CAMCOL_PLANE,
+	CAMCOL_BLOCK,
+	CAMCOL_NUM
+};
+
+enum Egm1LocEnum : __int32
+{
+	EGM1AREA_LEFT = 0x0,
+	EGM1AREA_CENTER = 0x1,
+	EGM1AREA_RIGHT = 0x2,
+	EGM1AREA_MAX = 0x3,
+};
+
+enum Egm1FlyModeEnum : __int32
+{
+	EGM1FLY_MODE_STAY_INIT = 0x0,
+	EGM1FLY_MODE_MISSILE = 0x1,
+	EGM1FLY_MODE_MISSILE_RAPID = 0x2,
+	EGM1FLY_MODE_MISSILE_AFTER_WAIT = 0x3,
+	EGM1FLY_MODE_ROTATE = 0x4,
+	EGM1FLY_MODE_BACK_FIRE = 0x5,
+	EGM1FLY_MODE_MOVE = 0x6,
+	EGM1FLY_MODE_SP_DOWN = 0x7,
+	EGM1FLY_MODE_ATK_INIT = 0x8,
+	EGM1FLY_MODE_ATK_HARI_OPEN = 0x9,
+	EGM1FLY_MODE_ATK_INIT2 = 0xA,
+	EGM1FLY_MODE_ATK_WAIT = 0xB,
+	EGM1FLY_MODE_ATK = 0xC,
+	EGM1FLY_MODE_ATK2 = 0xD,
+	EGM1FLY_MODE_WEAK_INIT = 0xE,
+	EGM1FLY_MODE_WEAK = 0xF,
+	EGM1FLY_MODE_RECOVER_INIT = 0x10,
+	EGM1FLY_MODE_RECOVER = 0x11,
+	EGM1FLY_MODE_MAX = 0x12,
+};
+
+enum Egm1DispModeEnum : __int32
+{
+	EGM1DISP_MODE_NORM = 0x0,
+	EGM1DISP_MODE_CRUSH = 0x1,
+	EGM1DISP_MODE_MAX = 0x2,
+};
+
+enum Egm1DeadFlyModeEnum : __int32
+{
+	EGM1DEAD_MODE_INIT = 0x0,
+	EGM1DEAD_MODE_MOVE = 0x1,
+	EGM1DEAD_MODE_FORCE_CRUSH = 0x2,
+	EGM1DEAD_MODE_CRUSH_PRMSET = 0x3,
+	EGM1DEAD_MODE_CRUSH = 0x4,
+	EGM1DEAD_MODE_END = 0x5,
+	EGM1DEAD_MODE_MAX = 0x6,
+};
+
+enum Egm1BakuCmdEnum : __int32
+{
+	CHG_BAKU_NORM = 0x0,
+	CHG_BAKU_VANISH = 0x1,
+	CHG_BAKU_MAX = 0x2,
+};
+
+enum Egm1JetCmdEnum : __int32
+{
+	CHG_JET_NONE = 0x0,
+	CHG_JET_NORM = 0x1,
+	CHG_JET_LARGE = 0x2,
+	CHG_JET_MAX = 0x3,
+};
+
+enum PAUSE_TEXTURE_ID : __int32
+{
+	PAUSE_TEX_NBUTTON_ITA = 0x0,
+	PAUSE_TEX_NBUTTON_KAGE = 0x1,
+	PAUSE_TEX_NBUTTON_WAKU = 0x2,
+	PAUSE_TEX_NPA_ADVENTURE = 0x3,
+	PAUSE_TEX_NPA_RESTART = 0x4,
+	PAUSE_TEX_NPA_SAIKAI = 0x5,
+	PAUSE_TEX_NPA_STOP = 0x6,
+	PAUSE_TEX_NSS_B_KADO = 0x7,
+	PAUSE_TEX_NSS_B_NAKA = 0x8,
+	PAUSE_TEX_KADO_SHADO = 0x9,
+	PAUSE_TEX_YOKO_SHADO = 0xA,
+	PAUSE_TEX_CAMERA = 0xB,
+	PAUSE_TEX_FREECAMERA = 0xC,
+	PAUSE_TEX_MAP = 0xD,
+	PAUSE_TEX_MISSION = 0xE,
+	PAUSE_TEX_NPA_HELP = 0xF,
+	PAUSE_TEX_NPA_LEADER = 0x10,
+	PAUSE_TEX_NPA_UNLOCK = 0x11,
+	PAUSE_TEX_NPA_ARCHIEVE = 0x12,
+	PAUSE_TEX_LB_WEEKLY = 0x13,
+	PAUSE_TEX_LB_OVERALL = 0x14,
+	PAUSE_TEX_LB_BACK = 0x15,
+	PAUSE_TEX_LB_O_HOW = 0x16,
+	PAUSE_TEX_LB_O_CONTROLS = 0x17,
+	PAUSE_TEX_LB_O_SETTING = 0x18,
+	PAUSE_TEX_LB_O_CREDITS = 0x19,
+	PAUSE_TEX_LB_T_SONIC = 0x1A,
+	PAUSE_TEX_LB_T_TAILS = 0x1B,
+	PAUSE_TEX_LB_T_KNUCKLES = 0x1C,
+	PAUSE_TEX_LB_T_AMY = 0x1D,
+	PAUSE_TEX_LB_T_BIG = 0x1E,
+	PAUSE_TEX_LB_T_E102 = 0x1F,
+	PAUSE_TEX_LB_S_RUMBLE = 0x20,
+	PAUSE_TEX_LB_S_MESSAGE = 0x21,
+	PAUSE_TEX_LB_S_LANG = 0x22,
+	PAUSE_TEX_LB_S_ON = 0x23,
+	PAUSE_TEX_LB_S_OFF = 0x24,
+	PAUSE_TEX_LB_S_ENGLISH = 0x25,
+	PAUSE_TEX_LB_S_FRENCH = 0x26,
+	PAUSE_TEX_LB_S_GERMAN = 0x27,
+	PAUSE_TEX_LB_S_SPAIN = 0x28,
+	PAUSE_TEX_LB_S_JAPANESE = 0x29,
+	PAUSE_TEX_LB_S_AND = 0x2A,
+	PAUSE_TEX_LB_S_ONLY = 0x2B,
+	PAUSE_TEX_NPA_TRIAL = 0x2C,
+	PAUSE_TEX_NPA_MISSION = 0x2D,
+	PAUSE_TEX_PAD_R = 0x2E,
+	PAUSE_TEX_PAD_L = 0x2F,
+	PAUSE_TEX_PAD_START = 0x30,
+	PAUSE_TEX_PAD_CANSEL = 0x31,
+	PAUSE_TEX_PAD_JUMP = 0x32,
+	PAUSE_TEX_PAD_ACTION = 0x33,
+	PAUSE_TEX_PAD_WHISTLE = 0x34,
+	PAUSE_TEX_PAD_CONFIG = 0x35,
+	PAUSE_TEX_PAD_CLEAR = 0x36,
+	PAUSE_TEX_MAX = 0x37,
+	PAUSE_TEX_NPA_RESTART_E = 0x37,
+	PAUSE_TEX_NPA_SAIKAI_E = 0x38,
+	PAUSE_TEX_NPA_STOP_E = 0x39,
+	PAUSE_TEX_CAMERA_E = 0x3A,
+	PAUSE_TEX_FREECAMERA_E = 0x3B,
+	PAUSE_TEX_MAP_E = 0x3C,
+	PAUSE_TEX_MISSION_E = 0x3D,
+	PAUSE_TEX_NUM = 0x3E,
+};
+
+// Chao
+
+enum eLayerNum : __int32
+{
+	ENT_MENU_LAYER_RACE_SELECT = 0x0,
+	ENT_MENU_LAYER_CHAO_SELECT = 0x1,
+	ENT_MENU_LAYER_COURSE_SELECT = 0x2,
+	NB_ENT_MENU_STAGE = 0x3,
+};
+
+enum eGardenNum : __int32
+{
+	ENT_MENU_GARDEN_MEMORY = 0x0,
+	ENT_MENU_GARDEN_SS = 0x1,
+	ENT_MENU_GARDEN_EC = 0x2,
+	ENT_MENU_GARDEN_MR = 0x3,
+	NB_ENT_MENU_GARDEN = 0x4,
+};
+
+enum EggColor : __int32
+{
+	EggColor_Normal = 0x0,
+	EggColor_Yellow = 0x1,
+	EggColor_White = 0x2,
+	EggColor_Brown = 0x3,
+	EggColor_SkyBlue = 0x4,
+	EggColor_Pink = 0x5,
+	EggColor_Blue = 0x6,
+	EggColor_Gray = 0x7,
+	EggColor_Green = 0x8,
+	EggColor_Red = 0x9,
+	EggColor_AppleGreen = 0xA,
+	EggColor_Purple = 0xB,
+	EggColor_Orange = 0xC,
+	EggColor_Black = 0xD,
+	EggColor_BlendYellow = 0xE,
+	EggColor_BlendWhite = 0xF,
+	EggColor_BlendBrown = 0x10,
+	EggColor_BlendSkyBlue = 0x11,
+	EggColor_BlendPink = 0x12,
+	EggColor_BlendBlue = 0x13,
+	EggColor_BlendGray = 0x14,
+	EggColor_BlendGreen = 0x15,
+	EggColor_BlendRed = 0x16,
+	EggColor_BlendAppleGreen = 0x17,
+	EggColor_BlendPurple = 0x18,
+	EggColor_BlendOrange = 0x19,
+	EggColor_BlendBlack = 0x1A,
+	EggColor_ShinyNormal = 0x1B,
+	EggColor_ShinyYellow = 0x1C,
+	EggColor_ShinyWhite = 0x1D,
+	EggColor_ShinyBrown = 0x1E,
+	EggColor_ShinySkyBlue = 0x1F,
+	EggColor_ShinyPink = 0x20,
+	EggColor_ShinyBlue = 0x21,
+	EggColor_ShinyGray = 0x22,
+	EggColor_ShinyGreen = 0x23,
+	EggColor_ShinyRed = 0x24,
+	EggColor_ShinyAppleGreen = 0x25,
+	EggColor_ShinyPurple = 0x26,
+	EggColor_ShinyOrange = 0x27,
+	EggColor_ShinyBlack = 0x28,
+	EggColor_ShinyBlendYellow = 0x29,
+	EggColor_ShinyBlendWhite = 0x2A,
+	EggColor_ShinyBlendBrown = 0x2B,
+	EggColor_ShinyBlendSkyBlue = 0x2C,
+	EggColor_ShinyBlendPink = 0x2D,
+	EggColor_ShinyBlendBlue = 0x2E,
+	EggColor_ShinyBlendGray = 0x2F,
+	EggColor_ShinyBlendGreen = 0x30,
+	EggColor_ShinyBlendRed = 0x31,
+	EggColor_ShinyBlendAppleGreen = 0x32,
+	EggColor_ShinyBlendPurple = 0x33,
+	EggColor_ShinyBlendOrange = 0x34,
+	EggColor_ShinyBlendBlack = 0x35,
+	EggColor_Gold = 0x36,
+	EggColor_Silver = 0x37,
+	EggColor_Ruby = 0x38,
+	EggColor_Sapphire = 0x39,
+	EggColor_Emerald = 0x3A,
+	EggColor_Amethyst = 0x3B,
+	EggColor_Aquamarine = 0x3C,
+	EggColor_Garnet = 0x3D,
+	EggColor_Onyx = 0x3E,
+	EggColor_Peridot = 0x3F,
+	EggColor_Topaz = 0x40,
+	EggColor_Pearl = 0x41,
+	EggColor_Env0 = 0x42,
+	EggColor_Env1 = 0x43,
+	EggColor_Env2 = 0x44,
+	EggColor_Env3 = 0x45,
+	EggColor_Env4 = 0x46,
+	nbEggColor = 0x47,
+};
+
+enum SkinColor : __int32
+{
+	SkinColor_Normal = 0x0,
+	SkinColor_Yellow = 0x1,
+	SkinColor_White = 0x2,
+	SkinColor_Brown = 0x3,
+	SkinColor_SkyBlue = 0x4,
+	SkinColor_Pink = 0x5,
+	SkinColor_Blue = 0x6,
+	SkinColor_Gray = 0x7,
+	SkinColor_Green = 0x8,
+	SkinColor_Red = 0x9,
+	SkinColor_AppleGreen = 0xA,
+	SkinColor_Purple = 0xB,
+	SkinColor_Orange = 0xC,
+	SkinColor_Black = 0xD,
 };
 
 #endif /* SADXMODLOADER_SADXENUMSNEW_H */
