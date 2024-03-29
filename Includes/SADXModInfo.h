@@ -9,9 +9,10 @@
 #include "SADXStructs.h"
 #include "SADXStructsNew.h"
 #include "ScaleInfo.h"
+#include "WeightInfo.h"
 
  // SADX Mod Loader API version.
-static const int ModLoaderVer = 15;
+static const int ModLoaderVer = 24;
 struct PatchInfo
 {
 	void* address;
@@ -35,6 +36,233 @@ struct PointerList
 {
 	const PointerInfo* Pointers;
 	int Count;
+};
+
+struct LoaderSettings
+{
+	bool DebugConsole;
+	bool DebugScreen;
+	bool DebugFile;
+	bool DebugCrashLog;
+	int HorizontalResolution;
+	int VerticalResolution;
+	bool ForceAspectRatio;
+	bool WindowedFullscreen;
+	bool EnableVsync;
+	bool AutoMipmap;
+	bool TextureFilter;
+	bool PauseWhenInactive;
+	bool StretchFullscreen;
+	int ScreenNum;
+	int VoiceLanguage;
+	int TextLanguage;
+	bool CustomWindowSize;
+	int WindowWidth;
+	int WindowHeight;
+	bool MaintainWindowAspectRatio;
+	bool ResizableWindow;
+	bool ScaleHud;
+	int BackgroundFillMode;
+	int FmvFillMode;
+	bool EnableBassMusic;
+	bool EnableBassSFX;
+	int SEVolume;
+	int TestSpawnLevel;
+	int TestSpawnAct;
+	int TestSpawnCharacter;
+	bool TestSpawnPositionEnabled;
+	int TestSpawnX;
+	int TestSpawnY;
+	int TestSpawnZ;
+	int TestSpawnRotation;
+	int TestSpawnEvent;
+	int TestSpawnGameMode;
+	int TestSpawnSaveID;
+	bool InputMod;
+	// Patches
+	bool HRTFSound;
+	bool CCEF;
+	bool PolyBuff;
+	bool MaterialColorFix;
+	bool NodeLimit;
+	bool FovFix;
+	bool SCFix;
+	bool Chaos2CrashFix;
+	bool ChunkSpecFix;
+	bool E102PolyFix;
+	bool ChaoPanelFix;
+	bool PixelOffsetFix;
+	bool LightFix;
+	bool KillGbix;
+	bool DisableCDCheck;
+	bool ExtendedSaveSupport;
+	bool CrashGuard;
+	// Graphics
+	int ScreenMode;				// Window Mode (Windowed, Fullscreen, Borderless Fullscren, or Custom Window); requires version 20+
+	bool ShowMouseInFullscreen;	// Displays Cursor when in Fullscreen; requires version 20+
+};
+
+struct ModDependency
+{
+	const char* ID;
+	const char* Folder;
+	const char* Name;
+	const char* Link;
+};
+
+struct ModDepsList
+{
+	typedef ModDependency value_type;
+	typedef int size_type;
+	typedef const value_type& reference;
+	typedef const value_type* pointer;
+	typedef pointer iterator;
+
+	pointer data;
+	size_type size;
+
+	// Retrieves an iterator to the start of the list (enables range-based for).
+	iterator begin()
+	{
+		return data;
+	}
+
+	// Retrieves an iterator to the end of the list (enables range-based for).
+	iterator end()
+	{
+		return data + size;
+	}
+
+	reference operator [](size_type pos)
+	{
+		return data[pos];
+	}
+};
+
+struct Mod
+{
+	const char* Name;
+	const char* Author;
+	const char* Description;
+	const char* Version;
+	const char* Folder;
+	const char* ID;
+	HMODULE DLLHandle;
+	bool MainSaveRedirect;
+	bool ChaoSaveRedirect;
+	const ModDepsList Dependencies;
+
+	template <typename T>
+	T GetDllExport(const char* name) const
+	{
+		if (!DLLHandle)
+			return nullptr;
+		return reinterpret_cast<T>(GetProcAddress(DLLHandle, name));
+	}
+};
+
+struct ModList
+{
+	typedef Mod value_type;
+	typedef int size_type;
+	typedef const value_type& reference;
+	typedef const value_type* pointer;
+	typedef pointer iterator;
+
+	// Retrieves an iterator to the start of the list (enables range-based for).
+	iterator (*begin)();
+	// Retrieves an iterator to the end of the list (enables range-based for).
+	iterator (*end)();
+	// Retrieves the item at position pos.
+	reference (*at)(size_type pos);
+	// Retrieves a pointer to the start of the list.
+	pointer (*data)();
+	// Retrieves the number of items in the list.
+	size_type (*size)();
+	// Find a mod by its ID.
+	iterator (*find)(const char* id);
+	// Find a mod by its name.
+	iterator (*find_by_name)(const char* name);
+	// Find a mod by its folder.
+	iterator (*find_by_folder)(const char* folder);
+	// Find a mod by its DLL handle.
+	iterator (*find_by_dll)(HMODULE handle);
+
+	reference operator [](size_type pos)
+	{
+		return at(pos);
+	}
+};
+
+struct BasicWeightFuncs
+{
+	// Initializes vertex buffers from a model.
+	void (*Init)(WeightInfo* weights, NJS_OBJECT* object);
+	// Apply weight info to a model based on the current animation frame.
+	void (*Apply)(WeightInfo* weights, NJS_ACTION* action, float frame);
+	// Restore the model's original vertices and free the buffers.
+	void (*DeInit)(WeightInfo* weights, NJS_OBJECT* object);
+};
+
+struct StartPosList
+{
+	typedef StartPosition value_type;
+	typedef size_t size_type;
+	typedef value_type& reference;
+	typedef const value_type& const_reference;
+	typedef value_type* pointer;
+	typedef const value_type* const_pointer;
+	typedef pointer iterator;
+	typedef const_pointer const_iterator;
+
+	// The character ID this list is associated with.
+	unsigned char key;
+	// Retrieves an iterator to the start of the list (enables range-based for).
+	virtual const_iterator begin() = 0;
+	// Retrieves an iterator to the end of the list (enables range-based for).
+	virtual const_iterator end() = 0;
+	// Retrieves the item at position pos.
+	virtual const_reference operator [](size_t pos) = 0;
+	// Retrieves a pointer to the start of the list.
+	virtual const_pointer data() = 0;
+	// Retrieves the number of items in the list.
+	virtual size_type size() = 0;
+	// Find the start position for a specific level (use the levelact macro).
+	virtual const_iterator find(int id) = 0;
+};
+
+struct StartPosManager
+{
+	typedef unsigned char key_type;
+	typedef StartPosition item_type;
+	typedef StartPosList value_type;
+	typedef size_t size_type;
+	typedef ptrdiff_t difference_type;
+	typedef value_type& reference;
+	typedef const value_type& const_reference;
+	typedef value_type* pointer;
+	typedef const value_type* const_pointer;
+	typedef pointer iterator;
+	typedef const_pointer const_iterator;
+
+	// Retrieves an iterator to the start of the list (enables range-based for).
+	virtual const_iterator begin() = 0;
+	// Retrieves an iterator to the end of the list (enables range-based for).
+	virtual const_iterator end() = 0;
+	// Retrieves the item at position pos.
+	virtual const_reference operator [](size_t pos) = 0;
+	// Retrieves a pointer to the start of the list.
+	virtual const_pointer data() = 0;
+	// Retrieves the number of items in the list.
+	virtual size_type size() = 0;
+	// Find a mod by its ID.
+	virtual const_iterator find(const char* id) = 0;
+	// Find a mod by its name.
+	virtual const_iterator find_by_name(const char* name) = 0;
+	// Find a mod by its folder.
+	virtual const_iterator find_by_folder(const char* folder) = 0;
+	// Find a mod by its DLL handle.
+	virtual const_iterator find_by_dll(HMODULE handle) = 0;
 };
 
 #undef ReplaceFile // Windows function macro
@@ -86,7 +314,7 @@ struct HelperFunctions
 	* allows other mods to replace this file without any extra work from you.
 	* Requires version >= 5.
 	*
-	* @param path The file path (e.g "SYSTEM\\my_cool_file.bin")
+	* @param path The file path (e.g "SYSTEM\\\\my_cool_file.bin")
 	* @return The replaced path to the file.
 	*/
 	const char* (__cdecl* GetReplaceablePath)(const char* path);
@@ -168,7 +396,71 @@ struct HelperFunctions
 	*
 	*/
 	void(__cdecl* RegisterCharacterWelds)(const uint8_t character, const char* iniPath);
+
+	// The settings that the mod loader was initialized with.
+	// Requires version >= 16.
+	const LoaderSettings* LoaderSettings;
+
+	// API for listing information on loaded mods.
+	// Requires version >= 16.
+	const ModList* Mods;
+
+	// API for applying weights to Ninja Basic models.
+	// Requires version >= 17.
+	const BasicWeightFuncs* Weights;
+
+	/**
+	* @brief Registers an ID for a new voice.
+	* Requires version >= 18.
+	*
+	* @param fileJP: The path to the audio file to play for Japanese.
+	* @param fileEN: The path to the audio file to play for English.
+	* @param durationJP: The duration for the Japanese voice.
+	* @param durationEN: The duration for the English voice.
+	* @return The ID number for your voice, or 0 if the list is full.
+	*
+	*/
+	uint16_t(__cdecl* RegisterVoice)(const char* fileJP, const char* fileEN, uint16_t durationJP, uint16_t durationEN);
+
+	/**
+	* @brief Push Interpolation fix for animations.
+	*
+	* Use this at the beginning of a display function and please disable it at the end after so it doesn't run for all animations in the game.
+	* Requires version >= 19.
+	*
+	*/
+	void(__cdecl* PushInterpolationFix)();
+
+	// Disable interpolation fix for animations, use it at the end of a display function.
+	// Requires version >= 19.
+	void(__cdecl* PopInterpolationFix)();
+	
+	/**
+	* @brief Prevents a texture list from being freed by njReleaseTextureAll.
+	* 
+	* Don't use this with RegisterCommonPVM because those will still be freed by lateReleaseTexture. 
+	* Requires version >= 20.
+	* 
+	*/
+	void(__cdecl* RegisterPermanentTexlist)(NJS_TEXLIST* texlist);
+
+	/**
+	* @brief Expands a TEX_PVMTABLE array (such as level PVM list) by adding a new entry to it.
+	*
+	* Requires version >= 20.
+	*
+	* @param sourcepvmlist: The original TEX_PVMTABLE array.
+	* @param newpvmentry: Pointer to the TEX_PVMTABLE struct to be added to the array.
+	* @return Pointer to the resized TEX_PVMTABLE array.
+	*/
+	TEX_PVMTABLE* (__cdecl* ExpandPVMList)(TEX_PVMTABLE* sourcepvmlist, const TEX_PVMTABLE &newpvmentry);
+
+	// Removes any file replacements for the specified file.
+	// Requires version >= 22.
+	void(__cdecl* UnreplaceFile)(const char* file);
 };
+
+//static_assert(std::is_standard_layout<HelperFunctions>::value);
 
 typedef void(__cdecl* ModInitFunc)(const char* path, const HelperFunctions& helperFunctions);
 

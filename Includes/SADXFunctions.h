@@ -479,6 +479,7 @@ FunctionPointer(void, SetMatrixInGiganticMatrixArrayIndex, (NJS_MATRIX *a3, int 
 FunctionPointer(void, InitSprite, (NJS_SPRITE *a1, NJS_TEXLIST *a2, NJS_TEXANIM *a3), 0x439B20);
 FunctionPointer(float, SkyDeck_IncrementFloat, (float a1, float a2, float a3), 0x439ED0);
 FunctionPointer(void, MorphPoints, (NJS_MODEL_SADX *a, NJS_MODEL_SADX *b, NJS_MODEL_SADX *destination, float factor), 0x439F20);
+FunctionPointer(int, GetNodeIndex, (NJS_OBJECT* rootNode, NJS_OBJECT* childNode), 0x439F60);
 FunctionPointer(void, InitLandTable, (int level, int act), 0x43A260);
 FunctionPointer(void, FreeLandTable, (int level, int act), 0x43A350);
 FunctionPointer(void, NextAct_FreeLandTable, (char increment), 0x43A460);
@@ -2642,6 +2643,7 @@ FunctionPointer(Sint32, njLoadPaletteFile, (const char *filename, NJS_TEXPALETTE
 FunctionPointer(NJS_TEXMEMLIST *, TexMemList_PixelFormat, (NJS_TEXINFO *texinfo, int gbix), 0x77F7F0);
 FunctionPointer(void, LoadPVM_ReadsGlobalIndex, (NJS_TEXMEMLIST *tex), 0x77F910);
 ThiscallFunctionPointer(Sint32, njSetTextureNumG, (Uint32 gbix), 0x77F9D0);
+FunctionPointer(void, njReLoadTextureNumG, (Uint32 n, Void* texaddrFilename, Uint32 attrTexture, Uint32 lodMip), 0x77FA10);
 ThiscallFunctionPointer(signed int, j_njSetTextureNumG, (int gbix), 0x77FA60);
 FunctionPointer(Sint32, njReleaseTexture_, (NJS_TEXLIST *texlist), 0x77FA70);
 VoidFunc(njReleaseTextureAll, 0x77FB30);
@@ -2751,7 +2753,7 @@ FunctionPointer(void, FreeLandTableModel, (NJS_MODEL_SADX *a1), 0x7870A0);
 FunctionPointer(void, FreeLandTableObject, (NJS_OBJECT *a1), 0x787100);
 FunctionPointer(void, InitLandTableObject, (NJS_OBJECT *), 0x787140);
 FastcallFunctionPointer(void, njSetTextureInfo, (NJS_TEXINFO *info, Uint16 *tex, Sint32 Type, Sint32 nWidth, Sint32 nHeight), 0x7871A0);
-FastcallFunctionPointer(void, njSetTextureNameEx, (NJS_TEXNAME *texname, void *filename, void *texaddr, NJD_TEXATTR attr), 0x7871C0);
+FastcallFunctionPointer(void, njSetTextureName, (NJS_TEXNAME* texname, void* addr, Uint32 globalIndex, Uint32 attr), 0x7871C0);
 StdcallFunctionPointer(float, squareroot, (float), 0x7871F0);
 VoidFunc(njEnableFog, 0x787220);
 VoidFunc(njDisableFog, 0x787230);

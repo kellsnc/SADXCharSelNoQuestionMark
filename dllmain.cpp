@@ -269,9 +269,16 @@ extern "C"
 
         delete config;
 
-        const IniFile* loader_config = new IniFile("mods\\SADXModLoader.ini");
-        HudScale = loader_config->getBool("", "ScaleHud", false);
-        delete loader_config;
+        if (helperFunctions.Version < 16)
+        {
+            const IniFile* loader_config = new IniFile("mods\\SADXModLoader.ini");
+            HudScale = loader_config->getBool("", "ScaleHud", false);
+            delete loader_config;
+        }
+        else
+        {
+            HudScale = helperFunctions.LoaderSettings->ScaleHud;
+        }
 	}
 
 	__declspec(dllexport) ModInfo SADXModInfo = { ModLoaderVer }; // This is needed for the Mod Loader to recognize the DLL.
